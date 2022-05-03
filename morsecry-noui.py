@@ -5,8 +5,7 @@ import sys
 import socket
 
 if len(sys.argv) == 2:
-	rawInput = str(sys.argv[1])
-	message = rawInput.lower()
+	message = str(sys.argv[1]).lower()
 
 	# convert process with string replace method
 	# - = 0 . = 1 1010 = " "
@@ -86,7 +85,6 @@ if len(sys.argv) == 2:
 
 
 	print("Recieved Decrypted: ", decryptedMessage)
-
 
 
 else:
