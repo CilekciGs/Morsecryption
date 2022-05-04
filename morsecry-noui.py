@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 
 # import required libraries
-import sys
 import socket
+from multiprocessing import Process
 
-if len(sys.argv) == 2:
-	message = str(sys.argv[1]).lower()
+TCP_IP = '127.0.0.1' #input("ip: ")
+TCP_PORT = int(input("port: "))	
+BUFFER_SIZE = 1024
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((TCP_IP, TCP_PORT))
 
-	# convert process with string replace method
+def send():
+	cl = str(input("Type:")).lower()
 	# - = 0 . = 1 1010 = " "
-	encoding = message.replace(" ", "1010 ")
+	encoding = cl.replace(" ", "1010 ")
 	encoding = encoding.replace("a", "10 ")
 	encoding = encoding.replace("b", "0111 ")
 	encoding = encoding.replace("c", "0101 ")
@@ -37,24 +41,12 @@ if len(sys.argv) == 2:
 	encoding = encoding.replace("y", "0100 ")
 	encoding = encoding.replace("z", "0011 ")
 	encryptedMessage = encoding
+	cl = str(encryptedMessage)
+	s.send(cl.encode(encoding='utf_8', errors='strict'))
 
-	print("Sent: ", encryptedMessage)
-
-	TCP_IP = '127.0.0.1'
-	TCP_PORT = 5005
-	BUFFER_SIZE = 1024
-	MESSAGE = str(encryptedMessage)
-
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	s.connect((TCP_IP, TCP_PORT))
-	s.send(MESSAGE.encode(encoding='utf_8', errors='strict'))
-	data = s.recv(BUFFER_SIZE).decode(encoding='utf_8', errors='strict')
-	s.close()
-
-	print("Received: ", data)
-
-# convert process with string replace method
-	decoding = data.replace("1010 ", " ")
+def recieve():
+	sv = s.recv(BUFFER_SIZE).decode(encoding='utf_8', errors='strict')
+	decoding = sv.replace("1010 ", " ")
 	decoding = decoding.replace("1011 ", "l")
 	decoding = decoding.replace("1110 ", "v")
 	decoding = decoding.replace("0110 ", "x")
@@ -81,13 +73,15 @@ if len(sys.argv) == 2:
 	decoding = decoding.replace("01 ", "n")
 	decoding = decoding.replace("1 ", "e")
 	decoding = decoding.replace("0 ", "t")
+
 	decryptedMessage = decoding
+	print("Recieved: ", decryptedMessage)
 
-
-	print("Recieved Decrypted: ", decryptedMessage)
-
-
-else:
-	print(len(sys.argv))
-	print("usage: python morsecry.py \'text\' ")
-	exit()
+while True:
+	if __name__ == '__main__':
+		p1 = Process(target=send)
+		p2 = Process(target=recieve)
+		p1.start()
+		p2.start()
+		p1.join()
+		p2.join()
