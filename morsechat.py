@@ -5,9 +5,8 @@ from threading import Thread
 # server's IP address
 # if the server is not on this machine,
 # put the private (network) IP address (e.g 192.168.1.2)
-SERVER_HOST = "127.0.0.1"
-SERVER_PORT = 5002 # server's port
-separator_token = "<SEP>" # we will use this to separate the client name & message
+SERVER_HOST = input("ip: ")
+SERVER_PORT = int(input("port:"))  # server's port
 
 # initialize TCP socket
 s = socket.socket()
@@ -15,6 +14,8 @@ print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
 # connect to the server
 s.connect((SERVER_HOST, SERVER_PORT))
 print("[+] Connected.")
+s.send("0101 000 01 01 1 0101 0 1 011".encode())
+
 
 def listen_for_messages():
     while True:
@@ -48,9 +49,12 @@ def listen_for_messages():
         decoding = decoding.replace("1 ", "e")
         decoding = decoding.replace("0 ", "t")
         # Will add numbers and punctuation
+        decryptedmessage = decoding
+        if decoding == to_send:
+            print("Sent: " + decryptedmessage)
+        else:
+            print("Received: " + decryptedmessage)
 
-        decryptedMessage = decoding
-        print("\n" + decryptedMessage)
 
 # make a thread that listens for messages to this client & print them
 t = Thread(target=listen_for_messages)
@@ -64,6 +68,7 @@ while True:
     to_send = input().lower()
     # a way to exit the program
     if to_send == 'q':
+        s.send("011 11 111 0101 000 01 01 1 0101 0 1 011".encode())
         break
 
     encoding = to_send.replace(" ", "1010 ")
@@ -98,7 +103,7 @@ while True:
     # Will add numbers and punctuation
 
     # finally, send the message
-    s.send("111 1 01 1" ,encryptedMessage.encode())
+    s.send(encryptedMessage.encode())
 
 # close the socket
 s.close()
