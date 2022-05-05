@@ -4,7 +4,6 @@ from threading import Thread
 # server's IP address
 SERVER_HOST = input("ip: ")
 SERVER_PORT = int(input("port: "))
-separator_token = "<SEP>" # we will use this to separate the client name & message
 
 # initialize list/set of all connected client's sockets
 client_sockets = set()
@@ -20,7 +19,7 @@ print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
 
 def listen_for_client(cs):
     """
-    This function keep listening for a message from `cs` socket
+        This function keep listening for a message from `cs` socket
     Whenever a message is received, broadcast it to all other connected clients
     """
     while True:
@@ -32,11 +31,7 @@ def listen_for_client(cs):
             # remove it from the set
             print(f"[!] Error: {e}")
             client_sockets.remove(cs)
-        else:
-            # if we received a message, replace the <SEP>
-            # token with ": " for nice printing
-            msg = msg.replace(separator_token, ": ")
-        # iterate over all connected sockets
+
         for client_socket in client_sockets:
             # and send the message
             client_socket.send(msg.encode())
