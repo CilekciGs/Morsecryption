@@ -16,6 +16,7 @@ s.connect((SERVER_HOST, SERVER_PORT))
 print("[+] Connected.")
 s.send("0101 000 01 01 1 0101 0 1 011".encode())
 
+to_send = "jfkldasjfkladsjfklasdjflkasdjf;ldasfklsdjfklsdajflksdjfklsdajfklsdjfl;asjfladsjfskljfasdklfjlsdajfksd"
 
 def listen_for_messages():
     while True:
@@ -50,7 +51,7 @@ def listen_for_messages():
         decoding = decoding.replace("0 ", "t")
         # Will add numbers and punctuation
         decryptedmessage = decoding
-        if decoding == to_send:
+        if decryptedmessage == to_send:
             print("Sent: " + decryptedmessage)
         else:
             print("Received: " + decryptedmessage)
