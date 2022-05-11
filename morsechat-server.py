@@ -17,15 +17,14 @@ s.bind((SERVER_HOST, SERVER_PORT))
 s.listen(5)
 print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
 
+
 def listen_for_client(cs):
-    """
-        This function keep listening for a message from `cs` socket
-    Whenever a message is received, broadcast it to all other connected clients
-    """
+
     while True:
         try:
             # keep listening for a message from `cs` socket
             msg = cs.recv(1024).decode()
+            print(msg)
         except Exception as e:
             # client no longer connected
             # remove it from the set
@@ -35,6 +34,7 @@ def listen_for_client(cs):
         for client_socket in client_sockets:
             # and send the message
             client_socket.send(msg.encode())
+
 
 while True:
     # we keep listening for new connections all the time
