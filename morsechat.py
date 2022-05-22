@@ -8,6 +8,9 @@ from threading import Thread
 SERVER_HOST = input("ip: ")
 SERVER_PORT = int(input("port:"))  # server's port
 
+global encryptedMessage
+encryptedMessage = "0101 000 01 01 1 0101 0 1 011 "
+
 # initialize TCP socket
 s = socket.socket()
 print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
@@ -18,7 +21,6 @@ s.send("0101 000 01 01 1 0101 0 1 011 ".encode())
 
 
 def listen_for_messages():
-    encryptedMessage = "connected"
     while True:
         message = s.recv(1024).decode()
         if message == encryptedMessage:
@@ -30,7 +32,7 @@ def listen_for_messages():
             decoding = decoding.replace("010010 ", ")")
             decoding = decoding.replace("000111 ", ":")
             decoding = decoding.replace("001100 ", ",")
-            decoding = decoding.replace("10100 ", "! ")
+            decoding = decoding.replace("10100 ", "!")
             decoding = decoding.replace("101010 ", ".")
             decoding = decoding.replace("011110 ", "-")
             decoding = decoding.replace("101101 ", '"')
@@ -142,7 +144,7 @@ while True:
         encoding = encoding.replace(":", "000111 ")
         encoding = encoding.replace(",", "001100 ")
         encoding = encoding.replace("=", "01110 ")
-        encoding = encoding.replace("!", "010100 ")
+        encoding = encoding.replace("!", "10100 ")
         encoding = encoding.replace(".", "101010 ")
         encoding = encoding.replace("-", "011110 ")
         encoding = encoding.replace("+", "10101 ")
@@ -150,9 +152,6 @@ while True:
         encoding = encoding.replace("?", "110011 ")
 
         encryptedMessage = encoding
-
-        print(encryptedMessage)
-
         s.send(encryptedMessage.encode())
 
 # close the socket
