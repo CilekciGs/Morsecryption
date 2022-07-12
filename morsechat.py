@@ -1,4 +1,5 @@
 import socket
+import base64
 from threading import Thread
 
 
@@ -9,25 +10,23 @@ SERVER_HOST = input("ip: ")
 SERVER_PORT = int(input("port:"))  # server's port
 
 global encryptedMessage
-encryptedMessage = "0101 000 01 01 1 0101 0 1 011 "
 
 # initialize TCP socket
 s = socket.socket()
-print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
+#print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
 # connect to the server
 s.connect((SERVER_HOST, SERVER_PORT))
 print("[+] Connected.")
-s.send("0101 000 01 01 1 0101 0 1 011 ".encode())
 
 
 def listen_for_messages():
     while True:
-        message = s.recv(1024).decode()
+        message = s.recv(1024)
         if message == encryptedMessage:
             pass
         else:
-
-            decoding = message.replace("100001 ", "'")
+            decoding = base64.b32decode(message).decode('utf-8')
+            decoding = decoding.replace("100001 ", "'")
             decoding = decoding.replace("100101 ", "@")
             decoding = decoding.replace("010010 ", ")")
             decoding = decoding.replace("000111 ", ":")
@@ -94,7 +93,6 @@ while True:
     to_send = input().lower()
     # a way to exit the program
     if to_send == 'q':
-        s.send("011 11 111 0101 000 01 01 1 0101 0 1 011 ".encode())
         break
     else:
 
@@ -152,7 +150,10 @@ while True:
         encoding = encoding.replace("?", "110011 ")
 
         encryptedMessage = encoding
-        s.send(encryptedMessage.encode())
+        encryptedMessage = base64.b32encode(bytearray(encoding, 'ascii'))
+
+        s.send(encryptedMessage)
 
 # close the socket
 s.close()
+sys.exit(0)

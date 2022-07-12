@@ -13,9 +13,10 @@ s = socket.socket()
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 # bind the socket to the address we specified
 s.bind((SERVER_HOST, SERVER_PORT))
+
 # listen for upcoming connections
 s.listen(5)
-print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
+#print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
 
 
 def listen_for_client(cs):
@@ -23,8 +24,7 @@ def listen_for_client(cs):
     while True:
         try:
             # keep listening for a message from `cs` socket
-            msg = cs.recv(1024).decode()
-            print(msg)
+            msg = cs.recv(1024)
         except Exception as e:
             # client no longer connected
             # remove it from the set
@@ -33,7 +33,7 @@ def listen_for_client(cs):
 
         for client_socket in client_sockets:
             # and send the message
-            client_socket.send(msg.encode())
+            client_socket.send(msg)
 
 
 while True:

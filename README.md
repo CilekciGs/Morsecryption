@@ -2,8 +2,8 @@
 
 ### To do:
 
-- [ ] Send info in bits
-- [ ] Change encoidng to plain text > base32 > morse from plaintext > morse 
+- [x] Send info in bits
+- [x] Change encoidng to plain text > base32 > morse from plaintext > morse 
 - [ ] Add ui
 - [x] Add punctuation and number support
 - [ ] Add proper 1 and 0 sending
