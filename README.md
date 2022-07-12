@@ -10,7 +10,7 @@
 
 ### How to run
 
-`python morsechat.py`
+`python morsechat.py` or `python morsechat.py ip:port` 
 
 Enter the ip and port of the server.
 
@@ -18,7 +18,7 @@ That's it if you are the client.
 
 ### How to host
 
-`python morsechat-server.py`
+`python morsechat-server.py` or `python morsechat-server.py ip:port`
 
 Enter the ip that the server should listen to for connetions(clients will have to enter this)
 

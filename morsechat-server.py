@@ -1,9 +1,6 @@
+import sys
 import socket
 from threading import Thread
-
-# server's IP address
-SERVER_HOST = input("ip: ")
-SERVER_PORT = int(input("port: "))
 
 # initialize list/set of all connected client's sockets
 client_sockets = set()
@@ -11,12 +8,18 @@ client_sockets = set()
 s = socket.socket()
 # make the port as reusable port
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-# bind the socket to the address we specified
-s.bind((SERVER_HOST, SERVER_PORT))
+
+try:
+    SERVER_HOST, separator, SERVER_PORT = sys.argv[1].rpartition(':')
+    s.bind((SERVER_HOST, int(SERVER_PORT)))
+except:
+    SERVER_HOST = input("ip: ")
+    SERVER_PORT = int(input("port:"))
+    s.bind((SERVER_HOST, SERVER_PORT))
 
 # listen for upcoming connections
 s.listen(5)
-#print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
+print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
 
 
 def listen_for_client(cs):
@@ -34,7 +37,6 @@ def listen_for_client(cs):
         for client_socket in client_sockets:
             # and send the message
             client_socket.send(msg)
-
 
 while True:
     # we keep listening for new connections all the time

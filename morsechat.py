@@ -1,23 +1,24 @@
 import socket
 import base64
+import sys
 from threading import Thread
-
-
-# server's IP address
-# if the server is not on this machine,
-# put the private (network) IP address (e.g 192.168.1.2)
-SERVER_HOST = input("ip: ")
-SERVER_PORT = int(input("port:"))  # server's port
 
 global encryptedMessage
 
 # initialize TCP socket
 s = socket.socket()
-#print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
-# connect to the server
-s.connect((SERVER_HOST, SERVER_PORT))
-print("[+] Connected.")
 
+try:
+    SERVER_HOST, separator, SERVER_PORT = sys.argv[1].rpartition(':')
+    s.connect((SERVER_HOST, int(SERVER_PORT)))
+except:
+    SERVER_HOST = input("ip: ")
+    SERVER_PORT = int(input("port:"))
+    s.connect((SERVER_HOST, SERVER_PORT))
+
+print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
+
+print("[+] Connected.")
 
 def listen_for_messages():
     while True:
@@ -75,7 +76,6 @@ def listen_for_messages():
             decoding = decoding.replace("01 ", "n")
             decoding = decoding.replace("1 ", "e")
             decoding = decoding.replace("0 ", "t")
-
 
             decryptedmessage = decoding
             print("Received: " + decryptedmessage)
