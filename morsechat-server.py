@@ -27,7 +27,7 @@ def listen_for_client(cs):
     while True:
         try:
             # keep listening for a message from `cs` socket
-            msg = cs.recv(1024)
+            msg = cs.recv(1024).decode()
         except Exception as e:
             # client no longer connected
             # remove it from the set
@@ -36,7 +36,7 @@ def listen_for_client(cs):
 
         for client_socket in client_sockets:
             # and send the message
-            client_socket.send(msg)
+            client_socket.send(msg.encode())
 
 while True:
     # we keep listening for new connections all the time
