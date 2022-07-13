@@ -4,6 +4,10 @@ import sys
 from threading import Thread
 
 global encryptedMessage
+global stop
+stop = 0
+
+encryptedMessage = ("")
 
 # initialize TCP socket
 s = socket.socket()
@@ -21,13 +25,12 @@ print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
 print("[+] Connected.")
 
 def listen_for_messages():
-    while True:
-        message = s.recv(1024)
+    while stop < 0:
+        message = s.recv(1024).decode()
         if message == encryptedMessage:
             pass
         else:
-            decoding = base64.b32decode(message).decode('utf-8')
-            decoding = decoding.replace("100001 ", "'")
+            decoding = message.replace("100001 ", "'")
             decoding = decoding.replace("100101 ", "@")
             decoding = decoding.replace("010010 ", ")")
             decoding = decoding.replace("000111 ", ":")
@@ -49,6 +52,8 @@ def listen_for_messages():
             decoding = decoding.replace("00011 ", "8")
             decoding = decoding.replace("01101 ", "9")
             decoding = decoding.replace("01110 ", "=")
+            decoding = decoding.replace("11001 ", "e")
+            decoding = decoding.replace("00101 ", "t")
             decoding = decoding.replace("01011 ", " ")
             decoding = decoding.replace("1011 ", "l")
             decoding = decoding.replace("1110 ", "v")
@@ -74,12 +79,11 @@ def listen_for_messages():
             decoding = decoding.replace("11 ", "i")
             decoding = decoding.replace("00 ", "m")
             decoding = decoding.replace("01 ", "n")
-            decoding = decoding.replace("1 ", "e")
-            decoding = decoding.replace("0 ", "t")
+            decoding = decoding.replace("0 ", "0")
+            decoding = decoding.replace("1 ", "1")
+            decoding = decoding.upper()[2:-1]
 
-            decryptedmessage = decoding
-            print("Received: " + decryptedmessage)
-
+            print("Received: " + str(base64.b32decode(decoding).decode()))
 
 # make a thread that listens for messages to this client & print them
 t = Thread(target=listen_for_messages)
@@ -90,14 +94,17 @@ t.start()
 
 while True:
     # input message we want to send to the server
+    stop = 1
     to_send = input().lower()
     # a way to exit the program
     if to_send == 'q':
         break
     else:
 
-        encoding = to_send.replace(" ", "01011 ")
-
+        encoding = str(base64.b32encode(bytearray(to_send, 'ascii'))).lower()
+        encoding = encoding.replace("0", "0 ")
+        encoding = encoding.replace("1", "1 ")
+        encoding = encoding.replace(" ", "01011 ")
         encoding = encoding.replace("2", "11000 ")
         encoding = encoding.replace("3", "11100 ")
         encoding = encoding.replace("4", "11110 ")
@@ -111,7 +118,7 @@ while True:
         encoding = encoding.replace("b", "0111 ")
         encoding = encoding.replace("c", "0101 ")
         encoding = encoding.replace("d", "011 ")
-        encoding = encoding.replace("e", "1 ")
+        encoding = encoding.replace("11001 ", "e")
         encoding = encoding.replace("f", "1101 ")
         encoding = encoding.replace("g", "001 ")
         encoding = encoding.replace("h", "1111 ")
@@ -126,7 +133,7 @@ while True:
         encoding = encoding.replace("q", "0010 ")
         encoding = encoding.replace("r", "101 ")
         encoding = encoding.replace("s", "111 ")
-        encoding = encoding.replace("t", "0 ")
+        encoding = encoding.replace("00101 ", "t")
         encoding = encoding.replace("u", "110 ")
         encoding = encoding.replace("v", "1110 ")
         encoding = encoding.replace("w", "100 ")
@@ -148,11 +155,9 @@ while True:
         encoding = encoding.replace("+", "10101 ")
         encoding = encoding.replace('"', "101101 ")
         encoding = encoding.replace("?", "110011 ")
-
         encryptedMessage = encoding
-        encryptedMessage = base64.b32encode(bytearray(encoding, 'ascii'))
 
-        s.send(encryptedMessage)
+        s.send((encryptedMessage).encode())
 
 # close the socket
 s.close()
