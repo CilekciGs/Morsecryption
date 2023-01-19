@@ -1,4 +1,5 @@
-import socket
+import zmq
+import time
 import base64
 import sys
 from threading import Thread
@@ -6,159 +7,152 @@ from threading import Thread
 global encryptedMessage
 global stop
 stop = 0
+encryptedMessage = ""
+context = zmq.Context()
 
-encryptedMessage = ("")
-
-# initialize TCP socket
-s = socket.socket()
 
 try:
     SERVER_HOST, separator, SERVER_PORT = sys.argv[1].rpartition(':')
-    s.connect((SERVER_HOST, int(SERVER_PORT)))
+## add connect code
 except:
     SERVER_HOST = input("ip: ")
     SERVER_PORT = int(input("port:"))
-    s.connect((SERVER_HOST, SERVER_PORT))
+## add connectcode
 
 print(f"[*] Connecting to {SERVER_HOST}:{SERVER_PORT}...")
 
 print("[+] Connected.")
 
+def coding(input, todo):
+    
+    if todo == "decode":
+            input = input.replace("100001 ", "'")
+            input = input.replace("100101 ", "@")
+            input = input.replace("010010 ", ")")
+            input = input.replace("000111 ", ":")
+            input = input.replace("001100 ", ",")
+            input = input.replace("10100 ", "!")
+            input = input.replace("101010 ", ".")
+            input = input.replace("011110 ", "-")
+            input = input.replace("101101 ", '"')
+            input = input.replace("110011 ", "?")
+            input = input.replace("10111 ", "&")
+            input = input.replace("01001 ", "(")
+            input = input.replace("10101 ", "+")
+            input = input.replace("11000 ", "2")
+            input = input.replace("11100 ", "3")
+            input = input.replace("11110 ", "4")
+            input = input.replace("11111 ", "5")
+            input = input.replace("01111 ", "6")
+            input = input.replace("00111 ", "7")
+            input = input.replace("00011 ", "8")
+            input = input.replace("01101 ", "9")
+            input = input.replace("01110 ", "=")
+            input = input.replace("01011 ", " ")
+            input = input.replace("1011 ", "l")
+            input = input.replace("1110 ", "v")
+            input = input.replace("0110 ", "x")
+            input = input.replace("0100 ", "y")
+            input = input.replace("0011 ", "z")
+            input = input.replace("0111 ", "b")
+            input = input.replace("0101 ", "c")
+            input = input.replace("1101 ", "f")
+            input = input.replace("1111 ", "h")
+            input = input.replace("1001 ", "p")
+            input = input.replace("0010 ", "q")
+            input = input.replace("1000 ", "j")
+            input = input.replace("011 ", "d")
+            input = input.replace("001 ", "g")
+            input = input.replace("010 ", "k")
+            input = input.replace("100 ", "w")
+            input = input.replace("000 ", "o")
+            input = input.replace("101 ", "r")
+            input = input.replace("111 ", "s")
+            input = input.replace("110 ", "u")
+            input = input.replace("10 ", "a")
+            input = input.replace("11 ", "i")
+            input = input.replace("00 ", "m")
+            input = input.replace("01 ", "n")
+            input = input.replace("1 ", "e")
+            input = input.replace("0 ", "t")
+            return(input)
+            input = ""
+    else:
+        input = input.replace(" ", "01011 ")
+        input = input.replace("2", "11000 ")
+        input = input.replace("3", "11100 ")
+        input = input.replace("4", "11110 ")
+        input = input.replace("5", "11111 ")
+        input = input.replace("6", "01111 ")
+        input = input.replace("7", "00111 ")
+        input = input.replace("8", "00011 ")
+        input = input.replace("9", "01101 ")
+
+        input = input.replace("a", "10 ")
+        input = input.replace("b", "0111 ")
+        input = input.replace("c", "0101 ")
+        input = input.replace("d", "011 ")
+        input = input.replace("e", "1 ")
+        input = input.replace("f", "1101 ")
+        input = input.replace("g", "001 ")
+        input = input.replace("h", "1111 ")
+        input = input.replace("i", "11 ")
+        input = input.replace("j", "1000 ")
+        input = input.replace("k", "010 ")
+        input = input.replace("l", "1011 ")
+        input = input.replace("m", "00 ")
+        input = input.replace("n", "01 ")
+        input = input.replace("o", "000 ")
+        input = input.replace("p", "1001 ")
+        input = input.replace("q", "0010 ")
+        input = input.replace("r", "101 ")
+        input = input.replace("s", "111 ")
+        input = input.replace("t", "0 ")
+        input = input.replace("u", "110 ")
+        input = input.replace("v", "1110 ")
+        input = input.replace("w", "100 ")
+        input = input.replace("x", "0110 ")
+        input = input.replace("y", "0100 ")
+        input = input.replace("z", "0011 ")
+
+        input = input.replace("&", "10111 ")
+        input = input.replace("'", "100001 ")
+        input = input.replace("@", "100101 ")
+        input = input.replace(")", "010010 ")
+        input = input.replace("(", "01001 ")
+        input = input.replace(":", "000111 ")
+        input = input.replace(",", "001100 ")
+        input = input.replace("=", "01110 ")
+        input = input.replace("!", "10100 ")
+        input = input.replace(".", "101010 ")
+        input = input.replace("-", "011110 ")
+        input = input.replace("+", "10101 ")
+        input = input.replace('"', "101101 ")
+        input = input.replace("?", "110011 ")
+        return(input)
+        input = ""
+
 def listen_for_messages():
-    while stop < 0:
-        message = s.recv(1024).decode()
+    while stop == 0:
+        message = "" ##add recieve code
         if message == encryptedMessage:
             pass
         else:
-            decoding = message.replace("100001 ", "'")
-            decoding = decoding.replace("100101 ", "@")
-            decoding = decoding.replace("010010 ", ")")
-            decoding = decoding.replace("000111 ", ":")
-            decoding = decoding.replace("001100 ", ",")
-            decoding = decoding.replace("10100 ", "!")
-            decoding = decoding.replace("101010 ", ".")
-            decoding = decoding.replace("011110 ", "-")
-            decoding = decoding.replace("101101 ", '"')
-            decoding = decoding.replace("110011 ", "?")
-            decoding = decoding.replace("10111 ", "&")
-            decoding = decoding.replace("01001 ", "(")
-            decoding = decoding.replace("10101 ", "+")
-            decoding = decoding.replace("11000 ", "2")
-            decoding = decoding.replace("11100 ", "3")
-            decoding = decoding.replace("11110 ", "4")
-            decoding = decoding.replace("11111 ", "5")
-            decoding = decoding.replace("01111 ", "6")
-            decoding = decoding.replace("00111 ", "7")
-            decoding = decoding.replace("00011 ", "8")
-            decoding = decoding.replace("01101 ", "9")
-            decoding = decoding.replace("01110 ", "=")
-            decoding = decoding.replace("11001 ", "e")
-            decoding = decoding.replace("00101 ", "t")
-            decoding = decoding.replace("01011 ", " ")
-            decoding = decoding.replace("1011 ", "l")
-            decoding = decoding.replace("1110 ", "v")
-            decoding = decoding.replace("0110 ", "x")
-            decoding = decoding.replace("0100 ", "y")
-            decoding = decoding.replace("0011 ", "z")
-            decoding = decoding.replace("0111 ", "b")
-            decoding = decoding.replace("0101 ", "c")
-            decoding = decoding.replace("1101 ", "f")
-            decoding = decoding.replace("1111 ", "h")
-            decoding = decoding.replace("1001 ", "p")
-            decoding = decoding.replace("0010 ", "q")
-            decoding = decoding.replace("1000 ", "j")
-            decoding = decoding.replace("011 ", "d")
-            decoding = decoding.replace("001 ", "g")
-            decoding = decoding.replace("010 ", "k")
-            decoding = decoding.replace("100 ", "w")
-            decoding = decoding.replace("000 ", "o")
-            decoding = decoding.replace("101 ", "r")
-            decoding = decoding.replace("111 ", "s")
-            decoding = decoding.replace("110 ", "u")
-            decoding = decoding.replace("10 ", "a")
-            decoding = decoding.replace("11 ", "i")
-            decoding = decoding.replace("00 ", "m")
-            decoding = decoding.replace("01 ", "n")
-            decoding = decoding.replace("0 ", "0")
-            decoding = decoding.replace("1 ", "1")
-            decoding = decoding.upper()[2:-1]
+            print("Recieved: "+ coding(base64.b32decode(message).decode('utf-8'), "decode"))
 
-            print("Received: " + str(base64.b32decode(decoding).decode()))
-
-# make a thread that listens for messages to this client & print them
 t = Thread(target=listen_for_messages)
-# make the thread daemon, so it ends whenever the main thread ends
 t.daemon = True
-# start the thread
 t.start()
 
 while True:
-    # input message we want to send to the server
-    stop = 1
     to_send = input().lower()
-    # a way to exit the program
     if to_send == 'q':
+        stop = 1
         break
     else:
+        encryptedMessage = coding(to_send, "encode")
+##add send code        s.send(base64.b32encode(bytearray(encryptedMessage, 'ascii')))
 
-        encoding = str(base64.b32encode(bytearray(to_send, 'ascii'))).lower()
-        encoding = encoding.replace("0", "0 ")
-        encoding = encoding.replace("1", "1 ")
-        encoding = encoding.replace(" ", "01011 ")
-        encoding = encoding.replace("2", "11000 ")
-        encoding = encoding.replace("3", "11100 ")
-        encoding = encoding.replace("4", "11110 ")
-        encoding = encoding.replace("5", "11111 ")
-        encoding = encoding.replace("6", "01111 ")
-        encoding = encoding.replace("7", "00111 ")
-        encoding = encoding.replace("8", "00011 ")
-        encoding = encoding.replace("9", "01101 ")
+# add close code
 
-        encoding = encoding.replace("a", "10 ")
-        encoding = encoding.replace("b", "0111 ")
-        encoding = encoding.replace("c", "0101 ")
-        encoding = encoding.replace("d", "011 ")
-        encoding = encoding.replace("11001 ", "e")
-        encoding = encoding.replace("f", "1101 ")
-        encoding = encoding.replace("g", "001 ")
-        encoding = encoding.replace("h", "1111 ")
-        encoding = encoding.replace("i", "11 ")
-        encoding = encoding.replace("j", "1000 ")
-        encoding = encoding.replace("k", "010 ")
-        encoding = encoding.replace("l", "1011 ")
-        encoding = encoding.replace("m", "00 ")
-        encoding = encoding.replace("n", "01 ")
-        encoding = encoding.replace("o", "000 ")
-        encoding = encoding.replace("p", "1001 ")
-        encoding = encoding.replace("q", "0010 ")
-        encoding = encoding.replace("r", "101 ")
-        encoding = encoding.replace("s", "111 ")
-        encoding = encoding.replace("00101 ", "t")
-        encoding = encoding.replace("u", "110 ")
-        encoding = encoding.replace("v", "1110 ")
-        encoding = encoding.replace("w", "100 ")
-        encoding = encoding.replace("x", "0110 ")
-        encoding = encoding.replace("y", "0100 ")
-        encoding = encoding.replace("z", "0011 ")
-
-        encoding = encoding.replace("&", "10111 ")
-        encoding = encoding.replace("'", "100001 ")
-        encoding = encoding.replace("@", "100101 ")
-        encoding = encoding.replace(")", "010010 ")
-        encoding = encoding.replace("(", "01001 ")
-        encoding = encoding.replace(":", "000111 ")
-        encoding = encoding.replace(",", "001100 ")
-        encoding = encoding.replace("=", "01110 ")
-        encoding = encoding.replace("!", "10100 ")
-        encoding = encoding.replace(".", "101010 ")
-        encoding = encoding.replace("-", "011110 ")
-        encoding = encoding.replace("+", "10101 ")
-        encoding = encoding.replace('"', "101101 ")
-        encoding = encoding.replace("?", "110011 ")
-        encryptedMessage = encoding
-
-        s.send((encryptedMessage).encode())
-
-# close the socket
-s.close()
 sys.exit(0)
