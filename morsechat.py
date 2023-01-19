@@ -48,6 +48,8 @@ def coding(input, todo):
             input = input.replace("00011 ", "8")
             input = input.replace("01101 ", "9")
             input = input.replace("01110 ", "=")
+            input = input.replace("11001 ", "e") ## NOT MORSE ACCURATE
+            input = input.replace("00101 ", "t") ## NOT MORSE ACCURATE
             input = input.replace("01011 ", " ")
             input = input.replace("1011 ", "l")
             input = input.replace("1110 ", "v")
@@ -73,10 +75,8 @@ def coding(input, todo):
             input = input.replace("11 ", "i")
             input = input.replace("00 ", "m")
             input = input.replace("01 ", "n")
-            input = input.replace("1 ", "e")
-            input = input.replace("0 ", "t")
             return(input)
-            input = ""
+            input = "" ## over-engineered
     else:
         input = input.replace(" ", "01011 ")
         input = input.replace("2", "11000 ")
@@ -92,7 +92,7 @@ def coding(input, todo):
         input = input.replace("b", "0111 ")
         input = input.replace("c", "0101 ")
         input = input.replace("d", "011 ")
-        input = input.replace("e", "1 ")
+        input = input.replace("e", "11001 ") ## NOT MORSE ACCURATE
         input = input.replace("f", "1101 ")
         input = input.replace("g", "001 ")
         input = input.replace("h", "1111 ")
@@ -107,7 +107,7 @@ def coding(input, todo):
         input = input.replace("q", "0010 ")
         input = input.replace("r", "101 ")
         input = input.replace("s", "111 ")
-        input = input.replace("t", "0 ")
+        input = input.replace("t", "00101 ") ## NOT MORSE ACCURATE
         input = input.replace("u", "110 ")
         input = input.replace("v", "1110 ")
         input = input.replace("w", "100 ")
@@ -130,7 +130,7 @@ def coding(input, todo):
         input = input.replace('"', "101101 ")
         input = input.replace("?", "110011 ")
         return(input)
-        input = ""
+        input = "" ## over-engineered
 
 def listen_for_messages():
     while stop == 0:
