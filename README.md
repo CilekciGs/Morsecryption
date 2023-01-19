@@ -6,7 +6,7 @@
 - [x] Change encoidng to plain text > base32 > morse from plaintext > morse 
 - [ ] Add ui
 - [x] Add punctuation and number support
-- [ ] Add proper 1 and 0 sending
+- [x] Add proper 1 and 0 sending
 
 ### How to run
 
